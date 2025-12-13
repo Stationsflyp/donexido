@@ -49,7 +49,6 @@ export function Dashboard({ token, user, onLogout }: DashboardProps) {
     },
   }
 
-  // --- CORRECCIÓN: define formatBytes antes de cualquier uso ---
   const formatBytes = (bytes: number) => {
     if (bytes === 0) return "0 Bytes"
     const k = 1024
@@ -69,17 +68,15 @@ export function Dashboard({ token, user, onLogout }: DashboardProps) {
         body: formData,
       })
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch files")
-      }
+      if (!response.ok) throw new Error("Failed to fetch files")
 
       const data = await response.json()
-      // Map backend response to frontend interface
       const mappedFiles = (data.files || []).map((f: any) => ({
         file_id: f.stored,
         original_name: f.name,
-        upload_date: new Date().toISOString(), // Backend doesn't return date
-        file_size: 0, // Backend doesn't return size
+        upload_date: f.upload_date || new Date().toISOString(),
+        file_size: f.size || 0,
+        password: f.password || "",
       }))
       setFiles(mappedFiles)
     } catch (error) {
@@ -113,18 +110,8 @@ export function Dashboard({ token, user, onLogout }: DashboardProps) {
     }
 
     const allowedExtensions = [
-      ".exe",
-      ".txt",
-      ".lua",
-      ".py",
-      ".js",
-      ".json",
-      ".md",
-      ".zip",
-      ".rar",
-      ".pdf",
-      ".doc",
-      ".docx",
+      ".exe", ".txt", ".lua", ".py", ".js", ".json", ".md",
+      ".zip", ".rar", ".pdf", ".doc", ".docx",
     ]
     const fileName = file.name.toLowerCase()
     const isAllowed = allowedExtensions.some((ext) => fileName.endsWith(ext))
@@ -156,56 +143,29 @@ export function Dashboard({ token, user, onLogout }: DashboardProps) {
     handleFileUpload(file)
   }
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(true)
-  }
-
-  const handleDragLeave = () => {
-    setIsDragging(false)
-  }
-
+  const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); setIsDragging(true) }
+  const handleDragLeave = () => setIsDragging(false)
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     setIsDragging(false)
-
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFileSelect(e.dataTransfer.files[0])
-    }
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFileSelect(e.dataTransfer.files[0])
   }
 
   const handleFileUpload = async (file: File) => {
     const formData = new FormData()
     formData.append("file", file)
     formData.append("token", token)
-
     setIsUploading(true)
 
     try {
-      const response = await fetch(`${API_BASE_URL}/upload`, {
-        method: "POST",
-        body: formData,
-      })
-
-      if (!response.ok) {
-        throw new Error("Upload failed")
-      }
-
+      const response = await fetch(`${API_BASE_URL}/upload`, { method: "POST", body: formData })
+      if (!response.ok) throw new Error("Upload failed")
       await response.json()
-
-      toast({
-        title: "Success",
-        description: `${file.name} uploaded successfully!`,
-      })
-
+      toast({ title: "Success", description: `${file.name} uploaded successfully!` })
       await fetchFiles()
       setSelectedFile(null)
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Upload Failed",
-        description: "Could not upload file. Please try again.",
-      })
+      toast({ variant: "destructive", title: "Upload Failed", description: "Could not upload file. Please try again." })
       console.error("Error uploading file:", error)
     } finally {
       setIsUploading(false)
@@ -217,65 +177,29 @@ export function Dashboard({ token, user, onLogout }: DashboardProps) {
       const formData = new FormData()
       formData.append("token", token)
       formData.append("file_id", fileId)
-
-      const response = await fetch(`${API_BASE_URL}/delete`, {
-        method: "POST",
-        body: formData,
-      })
-
-      if (!response.ok) {
-        throw new Error("Delete failed")
-      }
-
-      toast({
-        title: "Success",
-        description: "File deleted successfully!",
-      })
-
+      const response = await fetch(`${API_BASE_URL}/delete`, { method: "POST", body: formData })
+      if (!response.ok) throw new Error("Delete failed")
+      toast({ title: "Success", description: "File deleted successfully!" })
       await fetchFiles()
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Delete Failed",
-        description: "Could not delete file. Please try again.",
-      })
+      toast({ variant: "destructive", title: "Delete Failed", description: "Could not delete file. Please try again." })
       console.error("Error deleting file:", error)
     }
   }
 
-  const handleDownload = (fileId: string, fileName: string) => {
-    const downloadUrl = `${API_BASE_URL}/download/${fileId}`
-    window.open(downloadUrl, "_blank")
-  }
-
+  const handleDownload = (fileId: string) => { window.open(`${API_BASE_URL}/download/${fileId}`, "_blank") }
   const handleSetPassword = async (fileId: string, password: string) => {
     try {
       const formData = new FormData()
       formData.append("token", token)
       formData.append("file_id", fileId)
       formData.append("password", password)
-
-      const response = await fetch(`${API_BASE_URL}/set_password`, {
-        method: "POST",
-        body: formData,
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to set password")
-      }
-
-      toast({
-        title: "Success",
-        description: "Password set successfully!",
-      })
-
+      const response = await fetch(`${API_BASE_URL}/set_password`, { method: "POST", body: formData })
+      if (!response.ok) throw new Error("Failed to set password")
+      toast({ title: "Success", description: "Password set successfully!" })
       await fetchFiles()
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Failed",
-        description: "Could not set password. Please try again.",
-      })
+      toast({ variant: "destructive", title: "Failed", description: "Could not set password. Please try again." })
       console.error("Error setting password:", error)
     }
   }
