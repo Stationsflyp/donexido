@@ -10,9 +10,9 @@ export async function POST(request: NextRequest) {
 
     console.log("[v0] Server: Exchanging code for token...")
 
-    const clientId = "1449186590814507019"
-    const clientSecret = "Ns0IOV_mg2qre8Z8aE2JPZS33Tb5JcuD"
-    const redirectUri = "https://oxcyshopcloud.netlify.app/auth/callback"
+    const clientId = process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID
+    const clientSecret = process.env.DISCORD_CLIENT_SECRET
+    const redirectUri = process.env.NEXT_PUBLIC_DISCORD_REDIRECT_URI
 
     console.log("[v0] Server: Using client_id:", clientId)
     console.log("[v0] Server: Redirect URI:", redirectUri)

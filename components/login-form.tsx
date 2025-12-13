@@ -24,8 +24,8 @@ export function LoginForm({ onLogin }: LoginFormProps) {
   }, [])
 
   const handleDiscordLogin = () => {
-    const clientId = "1449186590814507019"
-    const redirectUri = "https://oxcyshopcloud.netlify.app/auth/callback"
+    const clientId = process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID
+    const redirectUri = process.env.NEXT_PUBLIC_DISCORD_REDIRECT_URI
 
     if (!clientId || clientId === "undefined") {
       console.error("[v0] Discord Client ID is missing")
