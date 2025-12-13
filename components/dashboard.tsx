@@ -36,7 +36,7 @@ export function Dashboard({ token, user, onLogout }: DashboardProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { toast } = useToast()
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://64.181.220.231:8000"
 
   const planLimits = {
     basic: {
