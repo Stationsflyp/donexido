@@ -49,6 +49,15 @@ export function Dashboard({ token, user, onLogout }: DashboardProps) {
     },
   }
 
+  // --- CORRECCIÓN: define formatBytes antes de cualquier uso ---
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return "0 Bytes"
+    const k = 1024
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB"]
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
+  }
+
   const fetchFiles = async () => {
     setIsLoading(true)
     try {
@@ -273,14 +282,6 @@ export function Dashboard({ token, user, onLogout }: DashboardProps) {
 
   const totalFiles = files.length
   const totalSize = files.reduce((sum, file) => sum + (file.file_size || 0), 0)
-  const formatBytes = (bytes: number) => {
-    if (bytes === 0) return "0 Bytes"
-    const k = 1024
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB"]
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
-  }
-
   const storagePercentage = (totalSize / planLimits[userPlan].totalStorage) * 100
 
   return (
