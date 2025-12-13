@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
     console.log("[v0] Server: User data received:", userData.username)
 
     // Authenticate with Python backend to get the real token
-    const pythonBackendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"
+    const pythonBackendUrl = process.env.NEXT_PUBLIC_API_URL || "http://64.181.220.231:8000"
     console.log("[v0] Server: Authenticating with Python backend at", pythonBackendUrl)
 
     let token
