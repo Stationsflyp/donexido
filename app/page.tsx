@@ -18,7 +18,6 @@ export default function HomePage() {
   useEffect(() => {
     console.log("[v0] HomePage mounted, checking auth state...")
 
-    // Check language
     const savedLang = localStorage.getItem("language") as Language
     if (savedLang && (savedLang === "en" || savedLang === "es")) {
       setLanguage(savedLang)
@@ -35,7 +34,6 @@ export default function HomePage() {
       return
     }
 
-    // Check if token exists in localStorage
     const savedToken = localStorage.getItem("oxcyshop_token")
     const savedUser = localStorage.getItem("oxcyshop_user")
 
@@ -54,13 +52,11 @@ export default function HomePage() {
 
     if (!hasAcceptedTerms) {
       console.log("[v0] Terms not accepted, showing dialog")
-      // Show terms dialog
       setToken(userToken)
       setUser(userData)
       setShowTerms(true)
     } else {
       console.log("[v0] Terms already accepted, logging in directly")
-      // Proceed with login
       localStorage.setItem("oxcyshop_token", userToken)
       localStorage.setItem("oxcyshop_user", JSON.stringify(userData))
       setToken(userToken)
@@ -80,14 +76,11 @@ export default function HomePage() {
 
   const handleRejectTerms = () => {
     console.log("[v0] Terms rejected")
-    const t = getTranslation(language)
 
-    // Clear any stored data
     setToken(null)
     setUser(null)
     setShowTerms(false)
 
-    // Show notification
     toast({
       variant: "destructive",
       title: language === "en" ? "Terms Required" : "Términos Requeridos",

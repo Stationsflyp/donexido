@@ -111,8 +111,8 @@ export async function POST(request: NextRequest) {
       })
 
       if (!authResponse.ok) {
-        console.warn("[v0] Python backend auth failed or not supported:", authResponse.status)
-        // Fallback to generated token if backend is unreachable or doesn't support auth
+        console.error("[v0] Python backend auth failed:", authResponse.status)
+        // Fallback to generated token if backend is unreachable (will not work for file operations)
         token = Buffer.from(`${userData.id}:${Date.now()}`).toString("base64")
       } else {
         const authData = await authResponse.json()
@@ -130,9 +130,6 @@ export async function POST(request: NextRequest) {
       avatar: userData.avatar ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png` : "",
       plan: "premium", // All whitelisted users are premium
     }
-
-    // Generate a simple token (in production, use JWT with proper signing)
-    // const token = Buffer.from(`${userData.id}:${Date.now()}`).toString("base64")
 
     console.log("[v0] Server: Authentication successful")
 

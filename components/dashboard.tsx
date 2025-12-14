@@ -36,7 +36,8 @@ export function Dashboard({ token, user, onLogout }: DashboardProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { toast } = useToast()
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://emerald-blocking-moment-witness.trycloudflare.com"
+  const API_BASE_URL =
+    process.env.NEXT_PUBLIC_API_URL || "https://emerald-blocking-moment-witness.trycloudflare.com"
 
   const planLimits = {
     basic: {
@@ -52,9 +53,12 @@ export function Dashboard({ token, user, onLogout }: DashboardProps) {
   const fetchFiles = async () => {
     setIsLoading(true)
     try {
-      // The backend /my_files endpoint doesn't require any parameters
+      const formData = new FormData()
+      formData.append("token", token)
+
       const response = await fetch(`${API_BASE_URL}/my_files`, {
         method: "POST",
+        body: formData,
       })
 
       if (!response.ok) {
@@ -62,12 +66,11 @@ export function Dashboard({ token, user, onLogout }: DashboardProps) {
       }
 
       const data = await response.json()
-      // Map backend response to frontend interface
       const mappedFiles = (data.files || []).map((f: any) => ({
         file_id: f.stored,
         original_name: f.name,
-        upload_date: new Date().toISOString(), // Backend doesn't return date
-        file_size: 0, // Backend doesn't return size
+        upload_date: new Date().toISOString(),
+        file_size: 0,
       }))
       setFiles(mappedFiles)
     } catch (error) {
@@ -165,7 +168,7 @@ export function Dashboard({ token, user, onLogout }: DashboardProps) {
   const handleFileUpload = async (file: File) => {
     const formData = new FormData()
     formData.append("file", file)
-    // Backend doesn't use token for upload
+    formData.append("token", token)
 
     setIsUploading(true)
 
@@ -203,7 +206,7 @@ export function Dashboard({ token, user, onLogout }: DashboardProps) {
   const handleFileDelete = async (fileId: string) => {
     try {
       const formData = new FormData()
-      // Backend expects file_id, not token
+      formData.append("token", token)
       formData.append("file_id", fileId)
 
       const response = await fetch(`${API_BASE_URL}/delete`, {
@@ -243,37 +246,6 @@ export function Dashboard({ token, user, onLogout }: DashboardProps) {
       description: "Password protection is not supported by the current server version.",
     })
     return
-    /*
-    try {
-      const formData = new FormData()
-      formData.append("token", token)
-      formData.append("file_id", fileId)
-      formData.append("password", password)
-
-      const response = await fetch(`${API_BASE_URL}/set_password`, {
-        method: "POST",
-        body: formData,
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to set password")
-      }
-
-      toast({
-        title: "Success",
-        description: "Password set successfully!",
-      })
-
-      await fetchFiles()
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Failed",
-        description: "Could not set password. Please try again.",
-      })
-      console.error("Error setting password:", error)
-    }
-    */
   }
 
   const totalFiles = files.length
