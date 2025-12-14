@@ -37,7 +37,7 @@ export function Dashboard({ token, user, onLogout }: DashboardProps) {
   const { toast } = useToast()
 
   const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || "https://quicksilver-promising-southern.trycloudflare.com"
+    process.env.NEXT_PUBLIC_API_URL || "https://13395616c938.ngrok-free.app"
 
   const planLimits = {
     basic: {
