@@ -37,7 +37,7 @@ export function Dashboard({ token, user, onLogout }: DashboardProps) {
   const { toast } = useToast()
 
   const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || "https://emerald-blocking-moment-witness.trycloudflare.com"
+    process.env.NEXT_PUBLIC_API_URL || "https://quicksilver-promising-southern.trycloudflare.com"
 
   const planLimits = {
     basic: {
